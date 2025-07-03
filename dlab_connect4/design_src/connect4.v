@@ -117,8 +117,8 @@ always @(*) begin
             end
         end
         S_DROP: begin
-            // occupied: is the cell occupied by a gaming piece? 1 for yes, 0 for no.
-            // whos: if the cell is occupied, who is on the cell? 1 for player1, 0 for player0.
+            // occupied: a 7*6 bit map, if the position (i, j) is occupied by a gaming piece. occupied[i*7+j] will be true.
+            // whos: a 7*6 bit map, indicates the position (i, j) is occupied by which player.
             // row_id: the row where the droping gaming piece at.
             if (/* dropping stops condition */) begin
                 // hint: When should the gaming piece stops dropping?
@@ -128,8 +128,8 @@ always @(*) begin
                 S_nxt = S_GO_JUDGE;
             end
             else begin 
-                {occupied_nxt[ row_id    * 7 + col_id], whos_nxt[ row_id    * 7 + col_id]} = /* how to clear the cell the gaming piece just drops throw */
-                {occupied_nxt[(row_id+1) * 7 + col_id], whos_nxt[(row_id+1) * 7 + col_id]} = /* how to fill the cell the gaming piece drops to */
+                {occupied_nxt[ row_id    * 7 + col_id], whos_nxt[ row_id    * 7 + col_id]} = /* how to clear the position the gaming piece just drops throw */
+                {occupied_nxt[(row_id+1) * 7 + col_id], whos_nxt[(row_id+1) * 7 + col_id]} = /* how to fill the position the gaming piece drops to */
                 row_id_nxt = row_id + 1;
                 S_nxt = S_DROP;
             end
@@ -233,6 +233,8 @@ module win_judge (
 
     input [41:0] occupied,
     input [41:0] whos,
+    // occupied: a 7*6 bit map, if the position (i, j) is occupied by a gaming piece. occupied[i*7+j] will be true.
+    // whos: a 7*6 bit map, indicates the position (i, j) is occupied by which player.
 
     output reg  op_ready,
     input       op_valid,
@@ -321,7 +323,7 @@ always @(*) begin
             r_nxt = (c == llim) ? r + 1 : r;
 
             if (occupied_all && whos_all) begin
-                // if the occupied_all and whos_all are both true, the current testing 4-cell-line is occupied by a single player.
+                // if the occupied_all and whos_all are both true, the current testing 4-position-line is occupied by a single player.
                 // finished condition is satisfied, how to set the return signals and which state to go?
                 re_valid_nxt       = /* */
                 re_is_finished_nxt = /* */
@@ -354,7 +356,7 @@ always @(*) begin
             r_nxt = (c == llim) ? r + 1 : r;
 
             if (occupied_all && whos_all) begin
-                // if the occupied_all and whos_all are both true, the current testing 4-cell-line is occupied by a single player.
+                // if the occupied_all and whos_all are both true, the current testing 4-position-line is occupied by a single player.
                 // finished condition is satisfied, how to set the return signals and which state to go?
                 re_valid_nxt       = /* */
                 re_is_finished_nxt = /* */
@@ -387,7 +389,7 @@ always @(*) begin
             r_nxt = (c == llim) ? r + 1 : r;
 
             if (occupied_all && whos_all) begin
-                // if the occupied_all and whos_all are both true, the current testing 4-cell-line is occupied by a single player.
+                // if the occupied_all and whos_all are both true, the current testing 4-position-line is occupied by a single player.
                 // finished condition is satisfied, how to set the return signals and which state to go?
                 re_valid_nxt       = /* */
                 re_is_finished_nxt = /* */
@@ -420,7 +422,7 @@ always @(*) begin
             r_nxt = (c == llim) ? r + 1 : r;
 
             if (occupied_all && whos_all) begin
-                // if the occupied_all and whos_all are both true, the current testing 4-cell-line is occupied by a single player.
+                // if the occupied_all and whos_all are both true, the current testing 4-position-line is occupied by a single player.
                 // finished condition is satisfied, how to set the return signals and which state to go?
                 re_valid_nxt       = /* */
                 re_is_finished_nxt = /* */
