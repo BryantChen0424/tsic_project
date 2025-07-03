@@ -10,6 +10,7 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
+#include <chrono>
 
 class KonaneGUI : public Gtk::Window {
 public:
@@ -150,12 +151,36 @@ void KonaneGUI::send_op(int i, int j) {
     dut->op_i = i;
     dut->op_j = j;
     dut->op_valid = 1;
-    while (!dut->op_ready) tick();
+    {
+        auto start = std::chrono::steady_clock::now();
+        while (!dut->op_ready) {
+            tick();
+            auto now = std::chrono::steady_clock::now();
+            if (std::chrono::duration_cast<std::chrono::milliseconds>(now - start).count() > 5000) {
+                Gtk::MessageDialog dialog(*this, "Gaming core timeout (op_ready)", false, Gtk::MESSAGE_ERROR, Gtk::BUTTONS_OK, true);
+                dialog.run();
+                hide();
+                return;
+            }
+        }
+    }
     tick();
     dut->op_valid = 0;
 
     dut->re_ready = 1;
-    while (!dut->re_valid) tick();
+    {
+        auto start = std::chrono::steady_clock::now();
+        while (!dut->re_valid) {
+            tick();
+            auto now = std::chrono::steady_clock::now();
+            if (std::chrono::duration_cast<std::chrono::milliseconds>(now - start).count() > 5000) {
+                Gtk::MessageDialog dialog(*this, "Gaming core timeout (re_valid)", false, Gtk::MESSAGE_ERROR, Gtk::BUTTONS_OK, true);
+                dialog.run();
+                hide();
+                return;
+            }
+        }
+    }
 
     player_id = dut->re_next_player_id;
     selectable = dut->re_selectable;
