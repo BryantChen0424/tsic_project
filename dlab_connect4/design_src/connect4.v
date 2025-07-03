@@ -117,13 +117,19 @@ always @(*) begin
             end
         end
         S_DROP: begin
-            if (row_id == 5 || occupied[(row_id+1) * 7 + col_id]) begin
+            // occupied: is the cell occupied by a gaming piece? 1 for yes, 0 for no.
+            // whos: if the cell is occupied, who is on the cell? 1 for player1, 0 for player0.
+            // row_id: the row where the droping gaming piece at.
+            if (/* dropping stops condition */) begin
+                // hint: When should the gaming piece stops dropping?
+                // 1. It's in the bottom (row_id is 5)
+                // 2. The next row of the same column is occupied
                 wj_op_valid_nxt = 1;
                 S_nxt = S_GO_JUDGE;
             end
-            else begin
-                {occupied_nxt[ row_id    * 7 + col_id], whos_nxt[ row_id    * 7 + col_id]} = 2'b0;
-                {occupied_nxt[(row_id+1) * 7 + col_id], whos_nxt[(row_id+1) * 7 + col_id]} = {1'b1, op_player_id};
+            else begin 
+                {occupied_nxt[ row_id    * 7 + col_id], whos_nxt[ row_id    * 7 + col_id]} = /* how to clear the cell the gaming piece just drops throw */
+                {occupied_nxt[(row_id+1) * 7 + col_id], whos_nxt[(row_id+1) * 7 + col_id]} = /* how to fill the cell the gaming piece drops to */
                 row_id_nxt = row_id + 1;
                 S_nxt = S_DROP;
             end
@@ -310,13 +316,16 @@ always @(*) begin
             whos_all     = ( & {whos    [r0 * 7 + c0], whos    [r1 * 7 + c1], whos    [r2 * 7 + c2], whos    [r3 * 7 + c3]}) |
                            (~| {whos    [r0 * 7 + c0], whos    [r1 * 7 + c1], whos    [r2 * 7 + c2], whos    [r3 * 7 + c3]});
             
+
             c_nxt = (c == llim) ? rlim : c + 1;
             r_nxt = (c == llim) ? r + 1 : r;
 
             if (occupied_all && whos_all) begin
-                re_valid_nxt = 1;
-                re_is_finished_nxt = 1;
-                S_nxt = S_RE;
+                // if the occupied_all and whos_all are both true, the current testing 4-cell-line is occupied by a single player.
+                // finished condition is satisfied, how to set the return signals and which state to go?
+                re_valid_nxt       = /* */
+                re_is_finished_nxt = /* */
+                S_nxt              = /* */
             end
             else begin
                 if (c == llim && r == blim) begin
@@ -345,9 +354,11 @@ always @(*) begin
             r_nxt = (c == llim) ? r + 1 : r;
 
             if (occupied_all && whos_all) begin
-                re_valid_nxt = 1;
-                re_is_finished_nxt = 1;
-                S_nxt = S_RE;
+                // if the occupied_all and whos_all are both true, the current testing 4-cell-line is occupied by a single player.
+                // finished condition is satisfied, how to set the return signals and which state to go?
+                re_valid_nxt       = /* */
+                re_is_finished_nxt = /* */
+                S_nxt              = /* */
             end
             else begin
                 if (c == llim && r == blim) begin
@@ -376,9 +387,11 @@ always @(*) begin
             r_nxt = (c == llim) ? r + 1 : r;
 
             if (occupied_all && whos_all) begin
-                re_valid_nxt = 1;
-                re_is_finished_nxt = 1;
-                S_nxt = S_RE;
+                // if the occupied_all and whos_all are both true, the current testing 4-cell-line is occupied by a single player.
+                // finished condition is satisfied, how to set the return signals and which state to go?
+                re_valid_nxt       = /* */
+                re_is_finished_nxt = /* */
+                S_nxt              = /* */
             end
             else begin
                 if (c == llim && r == blim) begin
@@ -407,9 +420,11 @@ always @(*) begin
             r_nxt = (c == llim) ? r + 1 : r;
 
             if (occupied_all && whos_all) begin
-                re_valid_nxt = 1;
-                re_is_finished_nxt = 1;
-                S_nxt = S_RE;
+                // if the occupied_all and whos_all are both true, the current testing 4-cell-line is occupied by a single player.
+                // finished condition is satisfied, how to set the return signals and which state to go?
+                re_valid_nxt       = /* */
+                re_is_finished_nxt = /* */
+                S_nxt              = /* */
             end
             else begin
                 if (c == llim && r == blim) begin
@@ -421,9 +436,9 @@ always @(*) begin
         end
         S_RE: begin
             if (re_fire) begin
+                op_ready_nxt = 1;
                 re_valid_nxt = 0;
                 re_is_finished_nxt = 0;
-                op_ready_nxt = 1;
                 S_nxt = S_IDLE;
             end
         end
