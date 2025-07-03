@@ -223,12 +223,38 @@ protected:
         dut->op_player_id = current_player;
         dut->op_col_id = col_id;
 
-        while (!dut->op_ready) tick();
+        {
+            auto start = std::chrono::steady_clock::now();
+            while (!dut->op_ready) {
+                tick();
+                auto now = std::chrono::steady_clock::now();
+                if (std::chrono::duration_cast<std::chrono::milliseconds>(now - start).count() > 5000) {
+                    Gtk::MessageDialog dialog(*this, "Gaming core timeout (op_ready)", false, Gtk::MESSAGE_ERROR, Gtk::BUTTONS_OK, true);
+                    dialog.set_title("Timeout");
+                    dialog.run();
+                    hide(); // 或 exit(1);
+                    return;
+                }
+            }
+        }
         tick();
         dut->op_valid = 0;
 
         dut->re_ready = 1;
-        while (!dut->re_valid) tick();
+        {
+            auto start = std::chrono::steady_clock::now();
+            while (!dut->re_valid) {
+                tick();
+                auto now = std::chrono::steady_clock::now();
+                if (std::chrono::duration_cast<std::chrono::milliseconds>(now - start).count() > 5000) {
+                    Gtk::MessageDialog dialog(*this, "Gaming core timeout (re_valid)", false, Gtk::MESSAGE_ERROR, Gtk::BUTTONS_OK, true);
+                    dialog.set_title("Timeout");
+                    dialog.run();
+                    hide(); // 或 exit(1);
+                    return;
+                }
+            }
+        }
         if (!dut->re_err && !dut->re_is_finished) current_player ^= 1;
         refresh_board();
         tick();
