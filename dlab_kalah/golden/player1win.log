@@ -1,0 +1,217 @@
+Game started at Wed Jul  2 20:44:34 2025
+
+Round 0 | Player 0 move: pit 2
+Board P1: 4 4 4 4 4 4 0 
+Board P0: 4 4 4 4 4 4 0 
+Next: Player 0
+-----------------------------
+Round 1 | Player 0 move: pit 3
+Board P1: 4 4 4 4 4 4 0 
+Board P0: 4 4 0 5 5 5 1 
+Next: Player 1
+-----------------------------
+Round 2 | Player 1 move: pit 2
+Board P1: 5 5 4 4 4 4 0 
+Board P0: 4 4 0 0 6 6 2 
+Next: Player 1
+-----------------------------
+Round 3 | Player 1 move: pit 1
+Board P1: 5 5 0 5 5 5 1 
+Board P0: 4 4 0 0 6 6 2 
+Next: Player 1
+-----------------------------
+Round 4 | Player 1 move: pit 5
+Board P1: 5 0 1 6 6 6 2 
+Board P0: 4 4 0 0 6 6 2 
+Next: Player 0
+-----------------------------
+Round 5 | Player 0 move: pit 0
+Board P1: 5 0 1 6 6 0 3 
+Board P0: 5 5 1 1 7 6 2 
+Next: Player 1
+-----------------------------
+Round 6 | Player 1 move: pit 0
+Board P1: 5 0 1 6 6 0 3 
+Board P0: 0 6 2 2 8 7 2 
+Next: Player 0
+-----------------------------
+Round 7 | Player 0 move: pit 4
+Board P1: 0 1 2 7 7 0 4 
+Board P0: 0 6 2 2 8 7 2 
+Next: Player 1
+-----------------------------
+Round 8 | Player 1 move: pit 4
+Board P1: 1 2 3 8 8 1 4 
+Board P0: 0 6 2 2 0 8 3 
+Next: Player 0
+-----------------------------
+Round 9 | Player 0 move: pit 3
+Board P1: 1 2 3 8 0 2 5 
+Board P0: 1 7 3 3 1 9 3 
+Next: Player 0
+-----------------------------
+Round 10 | Player 0 move: pit 4
+Board P1: 1 2 3 8 0 2 5 
+Board P0: 1 7 3 0 2 10 4 
+Next: Player 0
+-----------------------------
+Round 11 | Player 0 move: pit 2
+Board P1: 1 2 3 8 0 2 5 
+Board P0: 1 7 3 0 0 11 5 
+Next: Player 1
+-----------------------------
+Round 12 | Player 1 move: pit 5
+Board P1: 1 2 3 8 0 2 5 
+Board P0: 1 7 0 1 1 12 5 
+Next: Player 0
+-----------------------------
+Round 13 | Player 0 move: pit 3
+Board P1: 1 2 3 8 0 0 6 
+Board P0: 2 7 0 1 1 12 5 
+Next: Player 1
+-----------------------------
+Round 14 | Player 1 move: pit 2
+Board P1: 1 2 3 8 0 0 6 
+Board P0: 2 7 0 0 2 12 5 
+Next: Player 0
+-----------------------------
+Round 15 | Player 0 move: pit 4
+Board P1: 1 2 0 9 1 0 9 
+Board P0: 0 7 0 0 2 12 5 
+Next: Player 0
+-----------------------------
+Round 16 | Player 0 move: pit 1
+Board P1: 1 2 0 9 1 0 9 
+Board P0: 0 7 0 0 0 13 6 
+Next: Player 1
+-----------------------------
+Round 17 | Player 1 move: pit 0
+Board P1: 2 3 0 9 1 0 9 
+Board P0: 0 0 1 1 1 14 7 
+Next: Player 0
+-----------------------------
+Round 18 | Player 0 move: pit 5
+Board P1: 0 4 0 9 1 0 11 
+Board P0: 0 0 1 0 1 14 7 
+Next: Player 0
+-----------------------------
+Round 19 | Player 0 move: pit 5
+Board P1: 1 5 1 10 2 1 11 
+Board P0: 1 1 2 1 2 1 9 
+Next: Player 0
+-----------------------------
+Round 20 | Player 0 move: pit 4
+Board P1: 1 5 1 10 2 1 11 
+Board P0: 1 1 2 1 2 0 10 
+Next: Player 0
+-----------------------------
+Round 21 | Player 0 move: pit 5
+Board P1: 1 5 1 10 2 1 11 
+Board P0: 1 1 2 1 0 1 11 
+Next: Player 0
+-----------------------------
+Round 22 | Player 0 move: pit 1
+Board P1: 1 5 1 10 2 1 11 
+Board P0: 1 1 2 1 0 0 12 
+Next: Player 1
+-----------------------------
+Round 23 | Player 1 move: pit 5
+Board P1: 1 5 1 10 2 1 11 
+Board P0: 1 0 3 1 0 0 12 
+Next: Player 1
+-----------------------------
+Round 24 | Player 1 move: pit 4
+Board P1: 1 5 1 10 2 0 12 
+Board P0: 1 0 3 1 0 0 12 
+Next: Player 1
+-----------------------------
+Round 25 | Player 1 move: pit 5
+Board P1: 1 5 1 10 0 1 13 
+Board P0: 1 0 3 1 0 0 12 
+Next: Player 1
+-----------------------------
+Round 26 | Player 1 move: pit 1
+Board P1: 1 5 1 10 0 0 14 
+Board P0: 1 0 3 1 0 0 12 
+Next: Player 1
+-----------------------------
+Round 27 | Player 1 move: pit 5
+Board P1: 1 0 2 11 1 1 15 
+Board P0: 1 0 3 1 0 0 12 
+Next: Player 1
+-----------------------------
+Round 28 | Player 1 move: pit 2
+Board P1: 1 0 2 11 1 0 16 
+Board P0: 1 0 3 1 0 0 12 
+Next: Player 0
+-----------------------------
+Round 29 | Player 0 move: pit 3
+Board P1: 1 0 0 12 2 0 16 
+Board P0: 1 0 3 1 0 0 12 
+Next: Player 1
+-----------------------------
+Round 30 | Player 1 move: pit 4
+Board P1: 1 0 0 12 2 0 16 
+Board P0: 1 0 3 0 0 0 13 
+Next: Player 1
+-----------------------------
+Round 31 | Player 1 move: pit 5
+Board P1: 1 0 0 12 0 1 17 
+Board P0: 1 0 3 0 0 0 13 
+Next: Player 1
+-----------------------------
+Round 32 | Player 1 move: pit 0
+Board P1: 1 0 0 12 0 0 18 
+Board P0: 1 0 3 0 0 0 13 
+Next: Player 0
+-----------------------------
+Round 33 | Player 0 move: pit 0
+Board P1: 0 0 0 12 0 0 19 
+Board P0: 1 0 3 0 0 0 13 
+Next: Player 1
+-----------------------------
+Round 34 | Player 1 move: pit 3
+Board P1: 0 0 0 12 0 0 19 
+Board P0: 0 0 3 0 0 0 14 
+Next: Player 0
+-----------------------------
+Round 35 | Player 0 move: pit 5
+Board P1: 1 1 0 0 1 1 22 
+Board P0: 1 1 4 0 1 1 14 
+Next: Player 0
+-----------------------------
+Round 36 | Player 0 move: pit 4
+Board P1: 1 1 0 0 1 1 22 
+Board P0: 1 1 4 0 1 0 15 
+Next: Player 1
+-----------------------------
+Round 37 | Player 1 move: pit 5
+Board P1: 0 1 0 0 1 1 22 
+Board P0: 1 1 4 0 0 0 17 
+Next: Player 1
+-----------------------------
+Round 38 | Player 1 move: pit 1
+Board P1: 0 1 0 0 1 0 23 
+Board P0: 1 1 4 0 0 0 17 
+Next: Player 0
+-----------------------------
+Round 39 | Player 0 move: pit 2
+Board P1: 0 0 0 0 1 0 24 
+Board P0: 1 1 4 0 0 0 17 
+Next: Player 0
+-----------------------------
+Round 40 | Player 0 move: pit 5
+Board P1: 0 0 0 0 1 0 24 
+Board P0: 1 1 0 1 1 1 18 
+Next: Player 0
+-----------------------------
+Round 41 | Player 0 move: pit 4
+Board P1: 0 0 0 0 1 0 24 
+Board P0: 1 1 0 1 1 0 19 
+Next: Player 1
+-----------------------------
+Round 42 | Player 1 move: pit 4
+Board P1: 0 0 0 0 1 0 24 
+Board P0: 1 1 0 1 0 0 20 
+Game Over! Player 1 wins. (28-20)
+-----------------------------

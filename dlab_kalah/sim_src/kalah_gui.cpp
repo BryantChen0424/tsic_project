@@ -150,13 +150,37 @@ void KalahWindow::make_move(int pit_id) {
     dut->op_pit_id    = pit_id;
 
     // 等待 op_ready 成立
-    while (!dut->op_ready) { tick(); }
+    {
+        auto start = std::chrono::steady_clock::now();
+        while (!dut->op_ready) {
+            tick();
+            auto now = std::chrono::steady_clock::now();
+            if (std::chrono::duration_cast<std::chrono::milliseconds>(now - start).count() > 1000) {
+                Gtk::MessageDialog dialog(*this, "Gaming core timeout", false, Gtk::MESSAGE_ERROR, Gtk::BUTTONS_OK, true);
+                dialog.run();
+                hide(); // 或 std::exit(1);
+                return;
+            }
+        }
+    }
     tick(); // op_valid 一拍
     dut->op_valid = 0;
 
     // 等待 re_valid 成立
     dut->re_ready = 1;
-    while (!dut->re_valid) { tick(); }
+    {
+        auto start = std::chrono::steady_clock::now();
+        while (!dut->re_valid) {
+            tick();
+            auto now = std::chrono::steady_clock::now();
+            if (std::chrono::duration_cast<std::chrono::milliseconds>(now - start).count() > 1000) {
+                Gtk::MessageDialog dialog(*this, "Gaming core timeout", false, Gtk::MESSAGE_ERROR, Gtk::BUTTONS_OK, true);
+                dialog.run();
+                hide();
+                return;
+            }
+        }
+    }
 
     // 更新狀態
     int dut_next_player_id = dut->re_next_player_id;
