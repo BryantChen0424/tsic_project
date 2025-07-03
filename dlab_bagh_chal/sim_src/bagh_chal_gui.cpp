@@ -3,13 +3,10 @@
 #include <verilated_vcd_c.h>
 #include <chrono>
 #include <iostream>
-#include <vector>
-#include <string>
-#include <sstream>
-#include <iomanip>
 #include <fstream>
 #include <ctime>
-#include <sys/stat.h>
+#include <string>
+#include <sstream>
 #include "Vbagh_chal.h"
 #include "Vbagh_chal__Syms.h"
 
@@ -27,12 +24,14 @@ const char* op_type_str(int op_code) {
 class BaghChalGUI : public Gtk::Window {
 public:
     BaghChalGUI(std::string log_dir, std::string vcd_path)
-    : grid(), label_player("PLAYER"), label_action("ACTION"), label_goats("GOATS IN HAND"), label_killed("GOATS KILLED"), winner_label(), exit_button("Exit"), dut(new Vbagh_chal), t(0) {
-        set_title("Bagh Chal GUI with Log");
+    : label_player("PLAYER"), label_action("ACTION"), label_goats("GOATS IN HAND"),
+      label_killed("GOATS KILLED"), exit_button("Exit"), dut(new Vbagh_chal), t(0) {
+
+        set_title("Bagh Chal GUI with Log + Timeout");
         set_border_width(10);
         set_default_size(500, 500);
 
-        // === Initialize Verilator ===
+        // === Verilator Init ===
         tfp = new VerilatedVcdC;
         Verilated::traceEverOn(true);
         dut->trace(tfp, 99);
@@ -41,21 +40,23 @@ public:
         dut->rst_n = 0; tick(2);
         dut->rst_n = 1; tick(2);
 
-        // === Setup log ===
+        // === Logging ===
         char fname[256];
         auto now = std::chrono::system_clock::now();
         std::time_t now_t = std::chrono::system_clock::to_time_t(now);
         std::strftime(fname, sizeof(fname), "game_record_%Y%m%d_%H%M%S.log", std::localtime(&now_t));
         std::string full_log_path = log_dir + "/" + std::string(fname);
         log_file.open(full_log_path);
-        log_file << "Game started at " << std::ctime(&now_t) << std::endl;
+        log_file << "Game started at " << std::ctime(&now_t) << "\n";
 
+        // Initial states
         selectable = 0b0111011111111111111101110;
         op_mode = 3;
         goats_in_hand = 20;
         goats_killed = 0;
         game_over = false;
 
+        // Layout
         vbox.set_spacing(5);
         add(vbox);
 
@@ -74,29 +75,36 @@ public:
         grid.set_column_spacing(2);
         vbox.pack_start(grid, Gtk::PACK_EXPAND_WIDGET);
 
+        // CSS
         css_provider = Gtk::CssProvider::create();
-        css_provider->load_from_data(R"(button.goat {
-    background: white;
-    font-size: 18pt;
-    color: black;
-}
+        css_provider->load_from_data(R"(
+            button.goat {
+                background: white;
+                font-size: 18pt;
+                color: black;
+                box-shadow: 0 0 8px 2px #66ccff;
+            }
+            
+            button.tiger {
+                background: khaki;
+                font-size: 18pt;
+                color: black;
+                box-shadow: 0 0 8px 2px #ffcc66;
+            }
+            
+            button.disabled {
+                background: #DDDDDD;
+                font-size: 18pt;
+                color: black;
+                box-shadow: none;
+            }
+            
+            button:disabled {
+                color: black;
+            }
+            )");
 
-button.tiger {
-    background: khaki;
-    font-size: 18pt;
-    color: black;
-}
-
-button.disabled {
-    background: #DDDDDD;
-    font-size: 18pt;
-    color: black;
-}
-
-button:disabled {
-    color: black;
-})");
-
+        // Buttons
         for (int i = 0; i < 5; ++i)
             for (int j = 0; j < 5; ++j) {
                 auto btn = Gtk::manage(new Gtk::Button(""));
@@ -116,7 +124,7 @@ button:disabled {
     }
 
     virtual ~BaghChalGUI() {
-        log_file << "Game ended." << std::endl;
+        log_file << "Game ended.\n";
         if (log_file.is_open()) log_file.close();
         tfp->close();
         delete tfp;
@@ -175,12 +183,17 @@ protected:
                 ctx->remove_class("disabled");
 
                 if (sel && !game_over) {
-                    if (op_mode <= 3) ctx->add_class("goat");
-                    else ctx->add_class("tiger");
+                    ctx->add_class(op_mode <= 3 ? "goat" : "tiger");
                 } else {
                     ctx->add_class("disabled");
                 }
             }
+    }
+
+    void timeout_dialog() {
+        Gtk::MessageDialog dialog(*this, "Gaming core timeout", false, Gtk::MESSAGE_ERROR, Gtk::BUTTONS_OK, true);
+        dialog.run();
+        hide();
     }
 
     void on_cell_clicked(int i, int j) {
@@ -193,16 +206,39 @@ protected:
         dut->op_i = i;
         dut->op_j = j;
         dut->op_valid = 1;
-        while (!dut->op_ready) tick();
+
+        {
+            auto start = std::chrono::steady_clock::now();
+            while (!dut->op_ready) {
+                tick();
+                auto now = std::chrono::steady_clock::now();
+                if (std::chrono::duration_cast<std::chrono::milliseconds>(now - start).count() > 5000) {
+                    timeout_dialog();
+                    return;
+                }
+            }
+        }
+
         tick();
         dut->op_valid = 0;
 
         dut->re_ready = 1;
-        while (!dut->re_valid) tick();
+
+        {
+            auto start = std::chrono::steady_clock::now();
+            while (!dut->re_valid) {
+                tick();
+                auto now = std::chrono::steady_clock::now();
+                if (std::chrono::duration_cast<std::chrono::milliseconds>(now - start).count() > 5000) {
+                    timeout_dialog();
+                    return;
+                }
+            }
+        }
 
         if (dut->re_is_finished) {
             game_over = true;
-            std::string winner = (op_mode <= 3) ? "GOAT" : "TIGER";
+            std::string winner = (op_mode <= 3 ? "GOAT" : "TIGER");
             winner_label.set_markup("<span size='20000' weight='bold' foreground='red'>WINNER: " + winner + "</span>");
             label_action.set_text("==== GAME OVER ====");
             exit_button.set_sensitive(true);
@@ -229,9 +265,10 @@ protected:
 
 int main(int argc, char* argv[]) {
     if (argc != 3) {
-        std::cout << "Usage: ./bagh_chal_gui <log_dir> <wave.vcd>" << std::endl;
+        std::cout << "Usage: ./bagh_chal_gui <log_dir> <wave.vcd>\n";
         return 1;
     }
+
     Verilated::commandArgs(argc, argv);
     auto app = Gtk::Application::create("edu.bagh_chal.gui", Gio::APPLICATION_FLAGS_NONE);
     BaghChalGUI window(argv[1], argv[2]);
