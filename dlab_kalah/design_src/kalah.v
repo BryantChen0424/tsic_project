@@ -533,8 +533,8 @@ end
 
 always @(*) begin
     gg = (& P0_zero) || (& P1_zero);
-    player0_score = P0[6] + P1[0] + P1[1] + P1[2] + P1[3] + P1[4] + P1[5];
-    player1_score = P1[6] + P0[0] + P0[1] + P0[2] + P0[3] + P0[4] + P0[5];
+    player0_score = P0[6] + P0[0] + P0[1] + P0[2] + P0[3] + P0[4] + P0[5];
+    player1_score = P1[6] + P1[0] + P1[1] + P1[2] + P1[3] + P1[4] + P1[5];
 end
 
 endmodule
