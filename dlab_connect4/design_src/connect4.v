@@ -129,7 +129,7 @@ always @(*) begin
             end
             else begin 
                 {occupied_nxt[ row_id    * 7 + col_id], whos_nxt[ row_id    * 7 + col_id]} = /* how to clear the position the gaming piece just drops throw */
-                {occupied_nxt[(row_id+1) * 7 + col_id], whos_nxt[(row_id+1) * 7 + col_id]} = /* how to fill the position the gaming piece drops to */
+                {occupied_nxt[                       ], whos_nxt[                       ]} = /* how to fill the position the gaming piece drops to */
                 row_id_nxt = row_id + 1;
                 S_nxt = S_DROP;
             end
@@ -439,9 +439,9 @@ always @(*) begin
         S_RE: begin
             if (re_fire) begin
                 op_ready_nxt = 1;
-                re_valid_nxt = 0;
-                re_is_finished_nxt = 0;
-                S_nxt = S_IDLE;
+                re_valid_nxt       = /* */
+                re_is_finished_nxt = /* */
+                S_nxt              = /* */
             end
         end
         default: begin

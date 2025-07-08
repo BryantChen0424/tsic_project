@@ -555,8 +555,6 @@ localparam S_GCH_OP = 0,
            S_TPL_RE = 10;
 
 localparam GOAT = 0, TIGER = 1;
-localparam [24:0] GOAT_MASK = {25{1'b0}};
-localparam [24:0] TIGER_MASK = {25{1'b1}};
 
 reg [24:0] all_vacant;
 reg [24:0] all_goat;

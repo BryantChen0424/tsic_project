@@ -116,7 +116,7 @@ always @(*) begin
 
                 player_id_nxt      = op_player_id;
                 pit_id_nxt         = op_pit_id;
-
+                
                 board_op_valid_nxt     = /* compelete board control signals here */
                 board_op_player_id_nxt = /* compelete board control signals here */
                 board_op_pit_id_nxt    = /* compelete board control signals here */
