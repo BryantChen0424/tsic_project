@@ -71,8 +71,8 @@ public:
         winner_label.set_halign(Gtk::ALIGN_CENTER);
         vbox.pack_start(winner_label, Gtk::PACK_SHRINK);
 
-        grid.set_row_spacing(2);
-        grid.set_column_spacing(2);
+        grid.set_row_spacing(50);
+        grid.set_column_spacing(50);
         vbox.pack_start(grid, Gtk::PACK_EXPAND_WIDGET);
 
         // CSS
@@ -82,14 +82,14 @@ public:
                 background: white;
                 font-size: 18pt;
                 color: black;
-                box-shadow: 0 0 8px 2px #66ccff;
+                box-shadow: 0 0 2px 1px #66ccff;
             }
             
             button.tiger {
                 background: khaki;
                 font-size: 18pt;
                 color: black;
-                box-shadow: 0 0 8px 2px #ffcc66;
+                box-shadow: 0 0 2px 1px #ffcc66;
             }
             
             button.disabled {
