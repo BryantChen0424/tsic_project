@@ -1,0 +1,40 @@
+Game started at Tue Jul  8 21:45:24 2025
+
+Clicked: (1, 2)
+op_mode: 4, goats_in_hand: 19, goats_killed: 0
+Clicked: (0, 4)
+op_mode: 5, goats_in_hand: 19, goats_killed: 0
+Clicked: (1, 3)
+op_mode: 3, goats_in_hand: 19, goats_killed: 0
+Clicked: (2, 2)
+op_mode: 4, goats_in_hand: 18, goats_killed: 0
+Clicked: (1, 3)
+op_mode: 5, goats_in_hand: 18, goats_killed: 0
+Clicked: (3, 1)
+op_mode: 3, goats_in_hand: 18, goats_killed: 1
+Clicked: (3, 2)
+op_mode: 4, goats_in_hand: 17, goats_killed: 1
+Clicked: (3, 1)
+op_mode: 5, goats_in_hand: 17, goats_killed: 1
+Clicked: (3, 3)
+op_mode: 3, goats_in_hand: 17, goats_killed: 2
+Clicked: (2, 3)
+op_mode: 4, goats_in_hand: 16, goats_killed: 2
+Clicked: (3, 3)
+op_mode: 5, goats_in_hand: 16, goats_killed: 2
+Clicked: (1, 3)
+op_mode: 3, goats_in_hand: 16, goats_killed: 3
+Clicked: (2, 2)
+op_mode: 4, goats_in_hand: 15, goats_killed: 3
+Clicked: (1, 3)
+op_mode: 5, goats_in_hand: 15, goats_killed: 3
+Clicked: (1, 1)
+op_mode: 3, goats_in_hand: 15, goats_killed: 4
+Clicked: (2, 1)
+op_mode: 4, goats_in_hand: 14, goats_killed: 4
+Clicked: (1, 1)
+op_mode: 5, goats_in_hand: 14, goats_killed: 4
+Clicked: (3, 1)
+GAME OVER. Winner: TIGER
+op_mode: 3, goats_in_hand: 14, goats_killed: 5
+Game ended.

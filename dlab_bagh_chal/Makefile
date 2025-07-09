@@ -50,7 +50,7 @@ gui: dut
 	    -o $(GUI_EXEC) $(GTKMM_LIBS) -lverilated
 
 run-gui: gui
-	./$(GUI_EXEC) $(SREC_DIR)/ $(VCD)
+	./$(GUI_EXEC) $(SREC_DIR)/ $(VCD) $(SSRC_DIR)/bg.png
 
 clean:
 	rm -rf $(OBJ_DIR) *.txt  $(EXEC) $(GUI_EXEC) $(VCD)

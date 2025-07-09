@@ -23,13 +23,50 @@ const char* op_type_str(int op_code) {
 
 class BaghChalGUI : public Gtk::Window {
 public:
-    BaghChalGUI(std::string log_dir, std::string vcd_path)
+    // 注意多加一個 bg_img_path
+    BaghChalGUI(std::string log_dir, std::string vcd_path, std::string bg_img_path)
     : label_player("PLAYER"), label_action("ACTION"), label_goats("GOATS IN HAND"),
       label_killed("GOATS KILLED"), exit_button("Exit"), dut(new Vbagh_chal), t(0) {
 
-        set_title("Bagh Chal GUI with Log + Timeout");
+        set_title("Bagh Chal GUI with Log + Timeout + BG");
         set_border_width(10);
         set_default_size(500, 500);
+        set_resizable(false); 
+
+        // === Apply Background CSS ===
+        std::string css = 
+            "window {"
+            "  background-image: url('" + bg_img_path + "');"
+            "  background-size: cover;"
+            "}\n"
+            "button.goat {"
+            "  background: white;"
+            "  font-size: 18pt;"
+            "  color: black;"
+            "  box-shadow: 0 0 2px 1px #66ccff;"
+            "}"
+            "button.tiger {"
+            "  background: khaki;"
+            "  font-size: 18pt;"
+            "  color: black;"
+            "  box-shadow: 0 0 2px 1px #ffcc66;"
+            "}"
+            "button.disabled {"
+            "  background: #DDDDDD;"
+            "  font-size: 18pt;"
+            "  color: black;"
+            "  box-shadow: none;"
+            "}"
+            "button:disabled {"
+            "  color: black;"
+            "}";
+
+        css_provider = Gtk::CssProvider::create();
+        css_provider->load_from_data(css);
+
+        auto screen = Gdk::Screen::get_default();
+        get_style_context()->add_provider_for_screen(
+            screen, css_provider, GTK_STYLE_PROVIDER_PRIORITY_USER);
 
         // === Verilator Init ===
         tfp = new VerilatedVcdC;
@@ -74,35 +111,6 @@ public:
         grid.set_row_spacing(50);
         grid.set_column_spacing(50);
         vbox.pack_start(grid, Gtk::PACK_EXPAND_WIDGET);
-
-        // CSS
-        css_provider = Gtk::CssProvider::create();
-        css_provider->load_from_data(R"(
-            button.goat {
-                background: white;
-                font-size: 18pt;
-                color: black;
-                box-shadow: 0 0 2px 1px #66ccff;
-            }
-            
-            button.tiger {
-                background: khaki;
-                font-size: 18pt;
-                color: black;
-                box-shadow: 0 0 2px 1px #ffcc66;
-            }
-            
-            button.disabled {
-                background: #DDDDDD;
-                font-size: 18pt;
-                color: black;
-                box-shadow: none;
-            }
-            
-            button:disabled {
-                color: black;
-            }
-            )");
 
         // Buttons
         for (int i = 0; i < 5; ++i)
@@ -264,13 +272,13 @@ protected:
 };
 
 int main(int argc, char* argv[]) {
-    if (argc != 3) {
-        std::cout << "Usage: ./bagh_chal_gui <log_dir> <wave.vcd>\n";
+    if (argc != 4) {
+        std::cout << "Usage: ./bagh_chal_gui <log_dir> <wave.vcd> <bg_img.png>\n";
         return 1;
     }
 
     Verilated::commandArgs(argc, argv);
     auto app = Gtk::Application::create("edu.bagh_chal.gui", Gio::APPLICATION_FLAGS_NONE);
-    BaghChalGUI window(argv[1], argv[2]);
+    BaghChalGUI window(argv[1], argv[2], argv[3]);
     return app->run(window);
 }
