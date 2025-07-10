@@ -135,14 +135,12 @@ always @(*) begin
 
     case (S)
         S_GCH_OP: begin
-            if (op_fire) begin  // goat choose a "take" position
+            if (op_fire) begin
                 op_ready_nxt = 0;
                 re_valid_nxt = 1;
-                // the ci, cj are for the position where the current player take a game piece at
-                // the pi, pj are for the position where the current player put a game piece to
-                // which should be assigned with op_i, op_j here.
-                /* which pair of position register's next signal? */= op_i;
-                /* which pair of position register's next signal? */= op_j;
+
+                ci_nxt = op_i;
+                cj_nxt = op_j;
 
                 re_is_finished_nxt = 0;
 
@@ -163,28 +161,22 @@ always @(*) begin
         end
         S_GPL_OP: begin
             if (op_fire) begin
-                if (occupied[opij2idx]) begin // goat re-choose a "take" position
+                if (occupied[opij2idx]) begin
                     op_ready_nxt = 0;
                     re_valid_nxt = 1;
 
-                    // the ci, cj are for the position where the current player take a game piece at
-                    // the pi, pj are for the position where the current player put a game piece to
-                    // which should be assigned with op_i, op_j here.
-                    /* which pair of position register's next signal? */= op_i;
-                    /* which pair of position register's next signal? */= op_j;
+                    ci_nxt = op_i;
+                    cj_nxt = op_j;
 
                     re_is_finished_nxt = 0;
 
                     re_possible_ops_nxt = OP_GRCHPL;
                     S_nxt = S_GCH_RE;
                 end
-                else begin // goat choose a "put" position
+                else begin
                     op_ready_nxt = 0;
-                    // the ci, cj are for the position where the current player take a game piece at
-                    // the pi, pj are for the position where the current player put a game piece to
-                    // which should be assigned with op_i, op_j here.
-                    /* which pair of position register's next signal? */= op_i;
-                    /* which pair of position register's next signal? */= op_j;
+                    pi_nxt = op_i;
+                    pj_nxt = op_j;
 
                     S_nxt = S_GMV;
                 end
@@ -291,15 +283,12 @@ always @(*) begin
             end
         end
         S_TCH_OP: begin
-            if (op_fire) begin // tiger choose a "take" position
+            if (op_fire) begin
                 op_ready_nxt = 0;
                 re_valid_nxt = 1;
 
-                // the ci, cj are for the position where the current player take a game piece at
-                // the pi, pj are for the position where the current player put a game piece to
-                // which should be assigned with op_i, op_j here.
-                /* which pair of position register's next signal? */= op_i;
-                /* which pair of position register's next signal? */= op_j;
+                ci_nxt = op_i;
+                cj_nxt = op_j;
 
                 re_is_finished_nxt = 0;
 
@@ -320,29 +309,23 @@ always @(*) begin
         end
         S_TPL_OP: begin
             if (op_fire) begin
-                if (occupied[opij2idx]) begin // tiger re-choose a "take" position
+                if (occupied[opij2idx]) begin
                     op_ready_nxt = 0;
                     re_valid_nxt = 1;
 
-                    // the ci, cj are for the position where the current player take a game piece at
-                    // the pi, pj are for the position where the current player put a game piece to
-                    // which should be assigned with op_i, op_j here.
-                    /* which pair of position register's next signal? */= op_i;
-                    /* which pair of position register's next signal? */= op_j;
+                    ci_nxt = op_i;
+                    cj_nxt = op_j;
 
                     re_is_finished_nxt = 0;
 
                     re_possible_ops_nxt = OP_TRCHPL;
                     S_nxt = S_TCH_RE;
                 end
-                else begin // tiger choose a "put" position
+                else begin
                     op_ready_nxt = 0;
 
-                    // the ci, cj are for the position where the current player take a game piece at
-                    // the pi, pj are for the position where the current player put a game piece to
-                    // which should be assigned with op_i, op_j here.
-                    /* which pair of position register's next signal? */= op_i;
-                    /* which pair of position register's next signal? */= op_j;
+                    pi_nxt = op_i;
+                    pj_nxt = op_j;
 
                     S_nxt = S_TMV;
                 end
@@ -465,8 +448,9 @@ always @(posedge clk, negedge rst_n) begin
 
         for (idx = 0; idx < 25; idx = idx + 1) begin
             if (idx == 0 || idx == 4 || idx == 20 || idx == 24) begin
-                occupied[idx] <= 1;
-                whos[idx] <= TIGER;
+                // this is for initial tigers positions, what should be their initial value?
+                occupied[idx] <= //
+                whos[idx] <= //
             end
             else begin
                 occupied[idx] <= 0;
@@ -555,6 +539,8 @@ localparam S_GCH_OP = 0,
            S_TPL_RE = 10;
 
 localparam GOAT = 0, TIGER = 1;
+localparam [24:0] GOAT_MASK = {25{1'b0}};
+localparam [24:0] TIGER_MASK = {25{1'b1}};
 
 reg [24:0] all_vacant;
 reg [24:0] all_goat;
@@ -566,12 +552,16 @@ reg [24:0] ctiger_can_jumpto;
 integer idx, jdx;
 
 always @(*) begin
-    // all_vacant:  5*5 bit map, if a position i, j is a vacant, the all_vacant[i*5+j] will be true
+    // whos: 5*5 bit map,
+    //      if a position i, j is a goat, the whos[i*5+j] will be GOAT (localparam)
+    //      if a position i, j is a tiger, the whos[i*5+j] will be TIGER (localparam)
+    // occupied:  5*5 bit map, if a position i, j has a goat/tiger, the occupied[i*5+j] will be true
+    // all_vacant:  5*5 bit map, if a position i, j is vacant, the all_vacant[i*5+j] will be true
     // all_goat: 5*5 bit map, if a position i, j is a goat, the all_gaot[i*5+j] will be true
     // all_tiger: 5*5 bit map, if a position i, j is a tiger, the all_tiger[i*5+j] will be true
-    all_vacant = /* fill the exprssions here. hint: using bitwise operator to compute ocupied, whos, ... */
-    all_goat   = /* fill the exprssions here. hint: using bitwise operator to compute ocupied, whos, ... */
-    all_tiger  = /* fill the exprssions here. hint: using bitwise operator to compute ocupied, whos, ... */
+    all_vacant = ~/* a bit map here */;
+    all_goat = /* a bit map here */ & (/* a bit map here */ ~^ GOAT_MASK);
+    all_tiger = /* a bit map here */ & (/* a bit map here */ ~^ TIGER_MASK);
 
     for (idx = 0; idx < 5; idx = idx + 1) begin
         for (jdx = 0; jdx < 5; jdx = jdx + 1) begin

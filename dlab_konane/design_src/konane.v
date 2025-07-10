@@ -31,7 +31,12 @@ localparam S_CH_OP       = 0,
            S_J_STILL_RE  = 6,
            S_J_NOMOVE_RE = 7,
            S_JN_OP       = 8;
-           
+
+
+// It can be observed that black cells are restricted to holding only black pieces, and white cells only white pieces.
+// We created two bit map:
+//     BLACK_POSSIBLE: 6*6 bit map, "if and only if" position i, j is a restricted-to-holding black cell, the BLACK_POSSIBLE[6*i+j] will be 1.
+//     WHITE_POSSIBLE: 6*6 bit map, "if and only if" position i, j is a restricted-to-holding white cell, the WHITE_POSSIBLE[6*i+j] will be 1.
 localparam BLACK_POSSIBLE = {
     3{
         {3{2'b10}}, {3{2'b01}}
@@ -40,7 +45,7 @@ localparam BLACK_POSSIBLE = {
 
 localparam WHITE_POSSIBLE = {
     3{
-        {3{2'b01}}, {3{2'b10}}
+        /* what is the const here */
     }
 };
 
@@ -146,25 +151,25 @@ always @(*) begin
     W_canjump_nxt = W_canjump;
 
     case (S)
-        S_CH_OP: begin // wait player to choose a position of a stone to take
+        S_CH_OP: begin
             if (op_fire) begin
                 op_ready_nxt = 0;
                 ci_nxt = op_i;
                 cj_nxt = op_j;
                 re_valid_nxt = 1;
                 re_next_player_id_nxt = player_id;
-                S_nxt = /* fill the next state */
+                S_nxt = S_CH_RE;
             end
         end
-        S_CH_RE: begin // return player choose a position of a stone to take successfully
+        S_CH_RE: begin
             if (re_fire) begin
                 op_ready_nxt = 1;
                 re_valid_nxt = 0;
                 re_next_player_id_nxt = 0;
-                S_nxt = /* fill the next state */
+                S_nxt = S_JCH_OP;
             end
         end
-        S_JCH_OP: begin // wait player to re-choose a position of a stone to take, or choose a position to put stone
+        S_JCH_OP: begin
             if (op_fire) begin
                 op_ready_nxt = 0;
                 if (occupied[op_ij2idx]) begin
@@ -172,19 +177,16 @@ always @(*) begin
                     cj_nxt = op_j;
                     re_valid_nxt = 1;
                     re_next_player_id_nxt = player_id;
-                    // hint: this is a re-choose take-position situation,
-                    //       which means after return re-choose successfully,
-                    //       the controller needs to go back to this state.
-                    S_nxt = /* fill the next state */
+                    S_nxt = S_CH_RE;
                 end
                 else begin
                     ji_nxt = op_i;
                     jj_nxt = op_j;
-                    S_nxt = /* fill the next state */
+                    S_nxt = S_J_MV;
                 end
             end
         end
-        S_J_MV: begin // make the stone move from ci, cj to ji, jj, and go to update the board info
+        S_J_MV: begin
             occupied_nxt[jij2idx] = 1;
             occupied_nxt[cij2idx] = 0;
             occupied_nxt[($signed(ci) + i_dist/2) * 6 + ($signed(cj) + j_dist/2)] = 0;
@@ -202,54 +204,51 @@ always @(*) begin
             end
             ui_nxt = 0;
             uj_nxt = 0;
-            S_nxt = /* fill the next state */
+            S_nxt = S_J_UPDATE;
         end
-        S_J_UPDATE: begin // update the board infomation
+        S_J_UPDATE: begin
             N_canjump_nxt[uij2idx] = (ui > 1) && (~occupied[(ui - 2) * 6 + (uj    )]) && (occupied[(ui - 1) * 6 + (uj    )]) && (occupied[uij2idx]);
             E_canjump_nxt[uij2idx] = (uj < 4) && (~occupied[(ui    ) * 6 + (uj + 2)]) && (occupied[(ui    ) * 6 + (uj + 1)]) && (occupied[uij2idx]);
             S_canjump_nxt[uij2idx] = (ui < 4) && (~occupied[(ui + 2) * 6 + (uj    )]) && (occupied[(ui + 1) * 6 + (uj    )]) && (occupied[uij2idx]);
             W_canjump_nxt[uij2idx] = (uj > 1) && (~occupied[(ui    ) * 6 + (uj - 2)]) && (occupied[(ui    ) * 6 + (uj - 1)]) && (occupied[uij2idx]);
             // The ui, uj indicate the position testing now. In this state, the ui, uj will go through all position
 
-            // uj needs to count 0 to 5 again and again, increases by 1 or reset to zreo each cycle.
-            uj_nxt = /* compute the next testingh position */
-            // ui needs to count 0 to 5, but only increases by 1 at uj == 5, stays same value when uj is still counting in the same row.
-            ui_nxt = /* compute the next testingh position */
+            // uj needs to count 0 to 5 again and again, increases by 1 or wrap to zreo each cycle.
+            uj_nxt = (uj == 5) ? /**/ : /**/ ;
+            // ui needs to count 0 to 5, but only increases by 1 at uj == 5, holds the same value when uj is still running in the same row.
+            ui_nxt = (uj == 5) ? /**/ : /**/ ;
 
-
-            // after testing all positions, the state needs to go S_J_JUDGE, how to?
-            if (/* testing done condition */) begin
-                S_nxt =  /* fill the next state */
+            if (ui == 5 && uj == 5) begin
+                S_nxt = S_J_JUDGE;
             end
             else begin
-                S_nxt =  /* fill the next state */
+                S_nxt = S_J_UPDATE;
             end
         end
-        S_J_JUDGE: begin // controller judges if the same player can make another move.
+        S_J_JUDGE: begin
             if (
                 ((dir == NORTH) && (N_canjump[jij2idx])) ||
                 ((dir == EAST ) && (E_canjump[jij2idx])) ||
                 ((dir == SOUTH) && (S_canjump[jij2idx])) ||
                 ((dir == WEST ) && (W_canjump[jij2idx]))
-            ) begin /* with possible move situation. */
+            ) begin
                 re_valid_nxt = 1;
                 ci_nxt = ji;
                 cj_nxt = jj;
                 re_is_finished_nxt = (player_id == WHITE && black_no_move) || (player_id == BLACK && white_no_move);
                 re_next_player_id_nxt = player_id;
-                S_nxt =  /* fill the next state */
+                S_nxt = S_J_STILL_RE;
             end
-            else begin /* no more possible move situation. */
+            else begin
                 re_valid_nxt = 1;
                 ci_nxt = 0;
                 cj_nxt = 0;
                 re_is_finished_nxt = (player_id == WHITE && black_no_move) || (player_id == BLACK && white_no_move);
                 re_next_player_id_nxt = ~player_id;
-                S_nxt =  /* fill the next state */
+                S_nxt = S_J_NOMOVE_RE;
             end
         end
-        S_J_NOMOVE_RE: begin // return that the move successfully complete, but no more move.
-                             // after return, the should go to the state for another player to choose the take-position.
+        S_J_NOMOVE_RE: begin
             if (re_fire) begin
                 re_valid_nxt = 0;
                 op_ready_nxt = 1;
@@ -274,10 +273,10 @@ always @(*) begin
                     end
                 end
                 player_id_nxt = ~player_id;
-                S_nxt = /* fill the next state */
+                S_nxt = S_CH_OP;
             end
         end
-        S_J_STILL_RE: begin // return that the move successfully complete, and still move can be done
+        S_J_STILL_RE: begin
             if (re_fire) begin
                 re_valid_nxt = 0;
                 op_ready_nxt = 1;
@@ -302,11 +301,11 @@ always @(*) begin
                     end
                 end
                 else begin
-                    S_nxt = /* fill the next state */
+                    S_nxt = S_JN_OP;
                 end
             end
         end
-        S_JN_OP: begin // player choose if going to do the one more move
+        S_JN_OP: begin
             if (op_fire) begin
                 op_ready_nxt = 0;
                 if (op_i < 0 || op_j < 0) begin
@@ -320,7 +319,7 @@ always @(*) begin
                 else begin
                     ji_nxt = op_i;
                     jj_nxt = op_j;
-                    S_nxt = /* fill the next state */
+                    S_nxt = S_J_MV;
                 end
             end
         end

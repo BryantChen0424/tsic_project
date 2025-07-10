@@ -116,11 +116,11 @@ always @(*) begin
 
                 player_id_nxt      = op_player_id;
                 pit_id_nxt         = op_pit_id;
-                
-                board_op_valid_nxt     = /* compelete board control signals here */
-                board_op_player_id_nxt = /* compelete board control signals here */
-                board_op_pit_id_nxt    = /* compelete board control signals here */
-                board_op_op_nxt        = /* compelete board control signals here */
+
+                board_op_valid_nxt     = 1;
+                board_op_player_id_nxt = op_player_id;
+                board_op_pit_id_nxt    = op_pit_id;
+                board_op_op_nxt        = BOP_SOW;
 
                 board_re_ready_nxt = 1;
                 S_nxt              = S_LAUNCH_SOW;
@@ -131,10 +131,10 @@ always @(*) begin
         end
         S_LAUNCH_SOW: begin
             if (bop_fire) begin
-                board_op_valid_nxt     = /* compelete board control signals here */
-                board_op_player_id_nxt = /* compelete board control signals here */
-                board_op_pit_id_nxt    = /* compelete board control signals here */
-                board_op_op_nxt        = /* compelete board control signals here */
+                board_op_valid_nxt     = 0;
+                board_op_player_id_nxt = 0;
+                board_op_pit_id_nxt    = 0;
+                board_op_op_nxt        = BOP_N;
 
                 board_re_ready_nxt     = 1;
                 S_nxt                  = S_SOW;
@@ -154,10 +154,10 @@ always @(*) begin
                 end
                 else begin
                     if (board_re_player_id == player_id && board_re_nseeds == 1 && board_re_pit_id != 6) begin
-                        board_op_valid_nxt     = /* compelete board control signals here */
-                        board_op_player_id_nxt = /* compelete board control signals here */
-                        board_op_pit_id_nxt    = /* compelete board control signals here */
-                        board_op_op_nxt        = /* compelete board control signals here */
+                        board_op_valid_nxt     = /* hint: going to send an operation to sub-module */;
+                        board_op_player_id_nxt = op_player_id;
+                        board_op_pit_id_nxt    = board_re_pit_id;
+                        board_op_op_nxt        = /* hint: What is the 'code' of the CAP operation */;
 
                         board_re_ready_nxt     = 1;
                         S_nxt                  = S_LAUNCH_CAPTURE;
@@ -187,10 +187,10 @@ always @(*) begin
         end
         S_LAUNCH_CAPTURE: begin
             if (bop_fire) begin
-                board_op_valid_nxt     = /* compelete board control signals here */
-                board_op_player_id_nxt = /* compelete board control signals here */
-                board_op_pit_id_nxt    = /* compelete board control signals here */
-                board_op_op_nxt        = /* compelete board control signals here */
+                board_op_valid_nxt     = 0;
+                board_op_player_id_nxt = 0;
+                board_op_pit_id_nxt    = 0;
+                board_op_op_nxt        = BOP_N;
 
                 board_re_ready_nxt     = 1;
                 S_nxt                  = S_CAPTURE;
@@ -222,10 +222,10 @@ always @(posedge clk, negedge rst_n) begin
         re_is_finished <= 0;
         re_player0_score <= 0;
         re_player1_score <= 0;
-        board_op_valid     <= /* compelete board control signals initialization here */
-        board_op_player_id <= /* compelete board control signals initialization here */
-        board_op_pit_id    <= /* compelete board control signals initialization here */
-        board_op_op        <= /* compelete board control signals initialization here */
+        board_op_valid <= 0;
+        board_op_player_id <= 0;
+        board_op_pit_id <= 0;
+        board_op_op <= BOP_N;
         board_re_ready <= 0;
         S <= S_WAIT_OP;
         player_id <= 0;
@@ -410,11 +410,8 @@ always @(*) begin
                 sowing_pit_id_nxt    = (sowing_pit_id == 6) ? 0 : sowing_pit_id + 1;
                 nseeds_nxt           = (sowing_pit_id == 6 && sowing_player_id == ~player_id) ? nseeds : nseeds - 1;
                 for (i = 0; i < 6; i = i + 1) begin
-                    // sowing_pit_id: the next pit to drop a seed in this sow
-                    // sowing_player_id: the current player
-                    // 
-                    P0_nxt[i] = /* hint: in each drop, a pit either gets a seed(P0[i] + 1) or keeps the number of seeds (P0[i]). What's the criteria? */
-                    P1_nxt[i] = /* hint: in each drop, a pit either gets a seed(P1[i] + 1) or keeps the number of seeds (P1[i]). What's the criteria? */
+                    P0_nxt[i] = (sowing_pit_id == i && sowing_player_id == 0) ? /* when the sowing pass by this pt, what is the next value of the seed number? */ : P0[i];
+                    P1_nxt[i] = (sowing_pit_id == i && sowing_player_id == 1) ? /* when the sowing pass by this pt, what is the next value of the seed number? */ : P1[i];
                 end
                 P0_nxt[6] = ((player_id == 0) && (sowing_pit_id == 6 && sowing_player_id == 0)) ? P0[i] + 1: P0[i];
                 P1_nxt[6] = ((player_id == 1) && (sowing_pit_id == 6 && sowing_player_id == 1)) ? P1[i] + 1: P1[i];
@@ -429,16 +426,14 @@ always @(*) begin
             if (player_id == 0) begin
                 P0_nxt[6] = P0[6] + P0[pit_id] + P1[5-pit_id];
                 for (i = 0; i < 6; i = i + 1) begin
-                    // pit_id: the pit id which the capture operation choose.
-                    P1_nxt[i] = /* How to remove the opposite pit? What's the id? */
+                    P1_nxt[i] = (5-pit_id == i) ? 0 : P1[i];
                     P0_nxt[i] = (pit_id == i) ? 0 : P0[i];
                 end
             end
             if (player_id == 1) begin
                 P1_nxt[6] = P1[6] + P1[pit_id] + P0[5-pit_id];
                 for (i = 0; i < 6; i = i + 1) begin
-                    // pit_id: the pit id which the capture operation choose.
-                    P0_nxt[i] = /* How to remove the opposite pit? What's the id? */
+                    P0_nxt[i] = (5-pit_id == i) ? 0 : P0[i];
                     P1_nxt[i] = (pit_id == i) ? 0 : P1[i];
                 end
             end
