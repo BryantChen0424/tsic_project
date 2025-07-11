@@ -122,17 +122,8 @@ always @(*) begin
                 S_nxt = S_GO_JUDGE;
             end
             else begin
-                // occupied: a 7*6 bit map, if the position (i, j) is occupied by a gaming piece. occupied[i*7+j] will be true.
-                // whos: a 7*6 bit map, indicates the position (i, j) is occupied by which player.
-                // row_id: the row where the droping gaming piece at.
-                // player_id: the current player id.
-
-                // hint: a piece drop away from this position, what is the next value of this poistion. (it has two bits)
-                {occupied_nxt[ row_id    * 7 + col_id], whos_nxt[ row_id    * 7 + col_id]} = //
-
-
-                // hint: a piece drop into this position, what is the next value of this poistion. (it has two bits)
-                {occupied_nxt[(row_id+1) * 7 + col_id], whos_nxt[(row_id+1) * 7 + col_id]} = //;
+                {occupied_nxt[ row_id    * 7 + col_id], whos_nxt[ row_id    * 7 + col_id]} = 2'b0;
+                {occupied_nxt[(row_id+1) * 7 + col_id], whos_nxt[(row_id+1) * 7 + col_id]} = {1'b1, player_id};
                 row_id_nxt = row_id + 1;
                 S_nxt = S_DROP;
             end
@@ -323,10 +314,8 @@ always @(*) begin
             r_nxt = (c == llim) ? r + 1 : r;
 
             if (occupied_all && whos_all) begin
-                // if the occupied_all and whos_all are both true, the current testing 4-position-line is occupied by a single player.
-                // finished condition is satisfied, how to set the return signals?
-                re_valid_nxt = //
-                re_is_finished_nxt = //
+                re_valid_nxt = 1;
+                re_is_finished_nxt = 1;
                 S_nxt = S_RE;
             end
             else begin
