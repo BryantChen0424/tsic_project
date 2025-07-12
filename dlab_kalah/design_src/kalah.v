@@ -154,10 +154,10 @@ always @(*) begin
                 end
                 else begin
                     if (board_re_player_id == player_id && board_re_nseeds == 1 && board_re_pit_id != 6) begin
-                        board_op_valid_nxt     = 1;
+                        board_op_valid_nxt     = /* hint: going to send an operation to sub-module */;
                         board_op_player_id_nxt = op_player_id;
                         board_op_pit_id_nxt    = board_re_pit_id;
-                        board_op_op_nxt        = BOP_CAP;
+                        board_op_op_nxt        = /* hint: What is the 'code' of the CAP operation */;
 
                         board_re_ready_nxt     = 1;
                         S_nxt                  = S_LAUNCH_CAPTURE;
@@ -410,8 +410,8 @@ always @(*) begin
                 sowing_pit_id_nxt    = (sowing_pit_id == 6) ? 0 : sowing_pit_id + 1;
                 nseeds_nxt           = (sowing_pit_id == 6 && sowing_player_id == ~player_id) ? nseeds : nseeds - 1;
                 for (i = 0; i < 6; i = i + 1) begin
-                    P0_nxt[i] = (sowing_pit_id == i && sowing_player_id == 0) ? P0[i] + 1: P0[i];
-                    P1_nxt[i] = (sowing_pit_id == i && sowing_player_id == 1) ? P1[i] + 1: P1[i];
+                    P0_nxt[i] = (sowing_pit_id == i && sowing_player_id == 0) ? /* when the sowing pass by this pt, what is the next value of the seed number? */ : P0[i];
+                    P1_nxt[i] = (sowing_pit_id == i && sowing_player_id == 1) ? /* when the sowing pass by this pt, what is the next value of the seed number? */ : P1[i];
                 end
                 P0_nxt[6] = ((player_id == 0) && (sowing_pit_id == 6 && sowing_player_id == 0)) ? P0[i] + 1: P0[i];
                 P1_nxt[6] = ((player_id == 1) && (sowing_pit_id == 6 && sowing_player_id == 1)) ? P1[i] + 1: P1[i];
@@ -528,8 +528,8 @@ end
 
 always @(*) begin
     gg = (& P0_zero) || (& P1_zero);
-    player0_score = P0[6] + P1[0] + P1[1] + P1[2] + P1[3] + P1[4] + P1[5];
-    player1_score = P1[6] + P0[0] + P0[1] + P0[2] + P0[3] + P0[4] + P0[5];
+    player0_score = P0[6] + P0[0] + P0[1] + P0[2] + P0[3] + P0[4] + P0[5];
+    player1_score = P1[6] + P1[0] + P1[1] + P1[2] + P1[3] + P1[4] + P1[5];
 end
 
 endmodule

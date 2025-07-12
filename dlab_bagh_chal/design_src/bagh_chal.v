@@ -448,8 +448,9 @@ always @(posedge clk, negedge rst_n) begin
 
         for (idx = 0; idx < 25; idx = idx + 1) begin
             if (idx == 0 || idx == 4 || idx == 20 || idx == 24) begin
-                occupied[idx] <= 1;
-                whos[idx] <= TIGER;
+                // this is for initial tigers positions, what should be their initial value?
+                occupied[idx] <= //
+                whos[idx] <= //
             end
             else begin
                 occupied[idx] <= 0;
@@ -551,9 +552,16 @@ reg [24:0] ctiger_can_jumpto;
 integer idx, jdx;
 
 always @(*) begin
-    all_vacant = ~occupied;
-    all_goat = occupied & (whos ~^ GOAT_MASK);
-    all_tiger = occupied & (whos ~^ TIGER_MASK);
+    // whos: 5*5 bit map,
+    //      if a position i, j is a goat, the whos[i*5+j] will be GOAT (localparam)
+    //      if a position i, j is a tiger, the whos[i*5+j] will be TIGER (localparam)
+    // occupied:  5*5 bit map, if a position i, j has a goat/tiger, the occupied[i*5+j] will be true
+    // all_vacant:  5*5 bit map, if a position i, j is vacant, the all_vacant[i*5+j] will be true
+    // all_goat: 5*5 bit map, if a position i, j is a goat, the all_gaot[i*5+j] will be true
+    // all_tiger: 5*5 bit map, if a position i, j is a tiger, the all_tiger[i*5+j] will be true
+    all_vacant = ~/* a bit map here */;
+    all_goat = /* a bit map here */ & (/* a bit map here */ ~^ GOAT_MASK);
+    all_tiger = /* a bit map here */ & (/* a bit map here */ ~^ TIGER_MASK);
 
     for (idx = 0; idx < 5; idx = idx + 1) begin
         for (jdx = 0; jdx < 5; jdx = jdx + 1) begin

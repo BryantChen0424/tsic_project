@@ -31,7 +31,12 @@ localparam S_CH_OP       = 0,
            S_J_STILL_RE  = 6,
            S_J_NOMOVE_RE = 7,
            S_JN_OP       = 8;
-           
+
+
+// It can be observed that black cells are restricted to holding only black pieces, and white cells only white pieces.
+// We created two bit map:
+//     BLACK_POSSIBLE: 6*6 bit map, "if and only if" position i, j is a restricted-to-holding black cell, the BLACK_POSSIBLE[6*i+j] will be 1.
+//     WHITE_POSSIBLE: 6*6 bit map, "if and only if" position i, j is a restricted-to-holding white cell, the WHITE_POSSIBLE[6*i+j] will be 1.
 localparam BLACK_POSSIBLE = {
     3{
         {3{2'b10}}, {3{2'b01}}
@@ -40,7 +45,7 @@ localparam BLACK_POSSIBLE = {
 
 localparam WHITE_POSSIBLE = {
     3{
-        {3{2'b01}}, {3{2'b10}}
+        /* what is the const here */
     }
 };
 
@@ -206,8 +211,13 @@ always @(*) begin
             E_canjump_nxt[uij2idx] = (uj < 4) && (~occupied[(ui    ) * 6 + (uj + 2)]) && (occupied[(ui    ) * 6 + (uj + 1)]) && (occupied[uij2idx]);
             S_canjump_nxt[uij2idx] = (ui < 4) && (~occupied[(ui + 2) * 6 + (uj    )]) && (occupied[(ui + 1) * 6 + (uj    )]) && (occupied[uij2idx]);
             W_canjump_nxt[uij2idx] = (uj > 1) && (~occupied[(ui    ) * 6 + (uj - 2)]) && (occupied[(ui    ) * 6 + (uj - 1)]) && (occupied[uij2idx]);
-            uj_nxt = (uj == 5) ? 0      : uj + 1;
-            ui_nxt = (uj == 5) ? ui + 1 : ui;
+            // The ui, uj indicate the position testing now. In this state, the ui, uj will go through all position
+
+            // uj needs to count 0 to 5 again and again, increases by 1 or wrap to zreo each cycle.
+            uj_nxt = (uj == 5) ? /**/ : /**/ ;
+            // ui needs to count 0 to 5, but only increases by 1 at uj == 5, holds the same value when uj is still running in the same row.
+            ui_nxt = (uj == 5) ? /**/ : /**/ ;
+
             if (ui == 5 && uj == 5) begin
                 S_nxt = S_J_JUDGE;
             end
