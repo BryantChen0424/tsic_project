@@ -423,14 +423,14 @@ always @(*) begin
             end
         end
         S_CAP: begin
-            if (player_id == 0) begin
+            if ((player_id == 0) && (P1[5-pit_id] != 0)) begin
                 P0_nxt[6] = P0[6] + P0[pit_id] + P1[5-pit_id];
                 for (i = 0; i < 6; i = i + 1) begin
                     P1_nxt[i] = (5-pit_id == i) ? 0 : P1[i];
                     P0_nxt[i] = (pit_id == i) ? 0 : P0[i];
                 end
             end
-            if (player_id == 1) begin
+            if ((player_id == 1) && (P0[5-pit_id] != 0)) begin
                 P1_nxt[6] = P1[6] + P1[pit_id] + P0[5-pit_id];
                 for (i = 0; i < 6; i = i + 1) begin
                     P0_nxt[i] = (5-pit_id == i) ? 0 : P0[i];
